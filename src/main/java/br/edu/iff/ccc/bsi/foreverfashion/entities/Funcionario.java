@@ -1,26 +1,25 @@
 package br.edu.iff.ccc.bsi.foreverfashion.entities;
 
-import java.io.Serializable;
-
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "funcionario")
+@Table(name = "funcionario")    
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class Funcionario extends Usuario implements Serializable{
+@PrimaryKeyJoinColumn(name = "id_pessoa")
+public class Funcionario extends Pessoa{
     public static final long serialVersionUID = 1L;
-
+/* 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_funcionario;
-
-    @Column(nullable = false, unique = true, length = 15)
-    private String cpf;
-
-    @Column(nullable = false, length = 100)
-    private double salario;
+*/
+    @Column(nullable = false)
+    private Double salario;
 }

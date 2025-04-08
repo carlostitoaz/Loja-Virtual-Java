@@ -32,14 +32,14 @@ public class Produto implements Serializable{
     private String cor;
 
     @Column(nullable = false)
-    private double preco_custo;
+    private Double preco_custo;
 
     @Column(nullable = false)
     private int quantidade;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_categoria", nullable = false)
-    private Categoria id_categoria;
+    private Categoria categoria;
 
     @Column(nullable = false, length = 100)
     private String material;
