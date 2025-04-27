@@ -1,14 +1,14 @@
 package br.edu.iff.ccc.bsi.foreverfashion.controller.apirest;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import br.edu.iff.ccc.bsi.foreverfashion.dto.CargoGetDTO;
+import br.edu.iff.ccc.bsi.foreverfashion.dto.CargoSetDTO;
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Cargo;
 import br.edu.iff.ccc.bsi.foreverfashion.service.CargoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +31,10 @@ public class CargoApiRestController {
         @ApiResponse(responseCode = "409", description = "Cargo já cadastrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping()
-    public ResponseEntity<Cargo> create(@RequestBody Cargo body) {
-        Cargo cargoCriado = service.create(body);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cargoCriado);
+    public ResponseEntity<CargoGetDTO> create(@RequestBody CargoSetDTO body) {
+        Cargo cargoCriado = service.create(body.transformaParaObjeto());
+        CargoGetDTO cargosGetDTO = new CargoGetDTO();
+        return ResponseEntity.status(HttpStatus.CREATED).body(cargosGetDTO.transformaParaCargoDTO(cargoCriado));
     }
 
     @Operation(summary = "Buscar todos os cargos")
@@ -42,10 +43,11 @@ public class CargoApiRestController {
         @ApiResponse(responseCode = "404", description = "Cargos não encontrados", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping()
-    public ResponseEntity<List<Cargo>> readAll() {
+    public ResponseEntity<List<CargoGetDTO>> readAll() {
         List<Cargo> cargos = service.readAll();
         if (!cargos.isEmpty()) {
-            return ResponseEntity.ok(cargos);
+            CargoGetDTO cargoGetDTO = new CargoGetDTO();
+            return ResponseEntity.ok(cargoGetDTO.transformaParaCargoDTO(cargos));
         }
         return ResponseEntity.notFound().build();
     }
@@ -56,12 +58,10 @@ public class CargoApiRestController {
         @ApiResponse(responseCode = "404", description = "Cargo não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Cargo> readById(@PathVariable Long id) {
-        Optional<Cargo> cargo = service.readById(id);
-        if(cargo.isPresent()){
-            return ResponseEntity.ok(cargo.get());
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<CargoGetDTO> readById(@PathVariable Long id) {
+        Cargo cargo = service.readById(id);
+        CargoGetDTO cargoGetDTO = new CargoGetDTO();
+        return ResponseEntity.ok(cargoGetDTO.transformaParaCargoDTO(cargo));
     }
 
     @Operation(summary = "Atualizar um cargo")
@@ -70,9 +70,10 @@ public class CargoApiRestController {
         @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Cargo> update(@PathVariable Long id, @RequestBody Cargo body) {
-        Cargo cargoAtualizado = service.update(id, body);
-        return ResponseEntity.ok(cargoAtualizado);
+    public ResponseEntity<CargoGetDTO> update(@PathVariable Long id, @RequestBody CargoSetDTO body) {
+        Cargo cargoAtualizado = service.update(id, body.transformaParaObjeto());
+        CargoGetDTO cargoGetDTO = new CargoGetDTO();
+        return ResponseEntity.ok(cargoGetDTO.transformaParaCargoDTO(cargoAtualizado));
     }
 
     @Operation(summary = "Deletar um cargo")
@@ -81,11 +82,8 @@ public class CargoApiRestController {
         @ApiResponse(responseCode = "404", description = "Cargo não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        boolean cargoDeletado = service.delete(id);
-        if (!cargoDeletado) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(cargoDeletado);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

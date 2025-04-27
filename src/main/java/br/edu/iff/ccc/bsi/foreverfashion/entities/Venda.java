@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +21,7 @@ public class Venda implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_venda;
- 
+  
     private LocalDateTime data;
 
     @PrePersist
@@ -28,6 +30,7 @@ public class Venda implements Serializable{
     }
 
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<ItemVenda> itens;    
 
     @ManyToOne
@@ -36,9 +39,9 @@ public class Venda implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "id_pessoa", nullable = false)
-    private Pessoa Pessoa;
+    private Pessoa pessoa;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_forma_pagamento", nullable = false)
     private FormaPagamento forma_pagamento;
 }

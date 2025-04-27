@@ -1,7 +1,6 @@
 package br.edu.iff.ccc.bsi.foreverfashion.controller.apirest;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.edu.iff.ccc.bsi.foreverfashion.dto.AdministradorGetDTO;
+import br.edu.iff.ccc.bsi.foreverfashion.dto.AdministradorSetDTO;
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Administrador;
 import br.edu.iff.ccc.bsi.foreverfashion.service.AdministradorService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -39,9 +40,10 @@ public class AdministradorApiRestController {
         @ApiResponse(responseCode = "409", description = "Administrador já cadastrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping()
-    public ResponseEntity<Administrador> create(@RequestBody Administrador body) {
-        Administrador administradorCriado = service.create(body);
-        return ResponseEntity.status(HttpStatus.CREATED).body(administradorCriado);
+    public ResponseEntity<AdministradorGetDTO> create(@RequestBody AdministradorSetDTO body) {
+        Administrador administradorCriado = service.create(body.transformaParaObjeto());
+        AdministradorGetDTO administradorGetDTO = new AdministradorGetDTO();
+        return ResponseEntity.status(HttpStatus.CREATED).body(administradorGetDTO.transformaParaAdministradorDTO(administradorCriado));
     }
 
     @Operation(summary = "Buscar todos os administradores")
@@ -50,10 +52,11 @@ public class AdministradorApiRestController {
         @ApiResponse(responseCode = "404", description = "Administradores não encontrados", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping()
-    public ResponseEntity<List<Administrador>> readAll() {
+    public ResponseEntity<List<AdministradorGetDTO>> readAll() {
         List<Administrador> administradores = service.readAll();
         if(!administradores.isEmpty()){
-            return ResponseEntity.ok(administradores);
+            AdministradorGetDTO administradorGetDTO = new AdministradorGetDTO();
+            return ResponseEntity.ok(administradorGetDTO.transformaParaAdministradorDTO(administradores));
         }
         return ResponseEntity.notFound().build();
     }
@@ -64,12 +67,10 @@ public class AdministradorApiRestController {
         @ApiResponse(responseCode = "404", description = "Administrador não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Administrador> readById(@PathVariable Long id) {
-        Optional<Administrador> administrador = service.readById(id);
-        if(administrador.isPresent()){
-            return ResponseEntity.ok(administrador.get());
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<AdministradorGetDTO> readById(@PathVariable Long id) {
+        Administrador administrador = service.readById(id);
+        AdministradorGetDTO administradorGetDTO = new AdministradorGetDTO();
+        return ResponseEntity.ok(administradorGetDTO.transformaParaAdministradorDTO(administrador));
     }
 
     @Operation(summary = "Atualizar um administrador")
@@ -79,9 +80,10 @@ public class AdministradorApiRestController {
         @ApiResponse(responseCode = "404", description = "Administrador não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Administrador> update(@PathVariable Long id, @RequestBody Administrador body) {
-        Administrador administradorAtualizado = service.update(id, body);
-        return ResponseEntity.ok(administradorAtualizado);
+    public ResponseEntity<AdministradorGetDTO> update(@PathVariable Long id, @RequestBody AdministradorSetDTO body) {
+        Administrador administradorAtualizado = service.update(id, body.transformaParaObjeto());
+        AdministradorGetDTO administradorGetDTO = new AdministradorGetDTO();
+        return ResponseEntity.ok(administradorGetDTO.transformaParaAdministradorDTO(administradorAtualizado));
     }
 
     @Operation(summary = "Deletar um administrador")
@@ -90,11 +92,8 @@ public class AdministradorApiRestController {
         @ApiResponse(responseCode = "404", description = "Administrador não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        boolean administradorDeletado = service.delete(id);
-        if(!administradorDeletado){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(administradorDeletado);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

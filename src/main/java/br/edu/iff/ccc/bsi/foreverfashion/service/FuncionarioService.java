@@ -19,8 +19,8 @@ public class FuncionarioService{
 
     @Transactional
     public Funcionario create(Funcionario funcionario) {
-        if (funcionarioRepository.existsBySalario(funcionario.getSalario())) {
-            throw new RuntimeException("Funcionário já cadastrado com salário fornecido.");
+        if (funcionarioRepository.existsByEmail(funcionario.getEmail())) {
+            throw new RuntimeException("Funcionário já cadastrado com email fornecido.");
         }   
         return funcionarioRepository.save(funcionario);
     }
@@ -32,7 +32,7 @@ public class FuncionarioService{
     @Transactional
     public Funcionario update(Long id, Funcionario funcionario){
         if(!funcionarioRepository.existsById(id)){
-            throw new RuntimeException("Funcionário não encontrado");
+            throw new RuntimeException("Funcionário não encontrado.");
         }
         funcionario.setId_pessoa(id); 
         return funcionarioRepository.save(funcionario);
@@ -49,7 +49,7 @@ public class FuncionarioService{
 
     public Optional<Funcionario> readById(Long id){
         if(!funcionarioRepository.existsById(id)){
-           throw new RuntimeException("Funcionário não encontrado");
+           throw new RuntimeException("Funcionário não encontrado.");
         }
         return funcionarioRepository.findById(id);
     }

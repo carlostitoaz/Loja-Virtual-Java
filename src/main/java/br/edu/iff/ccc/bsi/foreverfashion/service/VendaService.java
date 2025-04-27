@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import br.edu.iff.ccc.bsi.foreverfashion.entities.ItemVenda;
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Venda;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.VendaRepository;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,11 @@ public class VendaService {
 
     @Transactional
     public Venda create(Venda venda) {
+        if (venda.getItens() != null) {
+            for (ItemVenda item : venda.getItens()) {
+                item.setVenda(venda);
+            }
+        }
         return vendaRepository.save(venda);
     }
 
@@ -28,6 +34,9 @@ public class VendaService {
     }
 
     public Optional<Venda> readById(Long id) {
+        if (!vendaRepository.existsById(id)) {
+            throw new RuntimeException("Venda não encontrada.");
+        }
         return vendaRepository.findById(id);
     }
 

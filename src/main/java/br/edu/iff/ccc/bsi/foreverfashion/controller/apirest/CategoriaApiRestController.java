@@ -1,7 +1,6 @@
 package br.edu.iff.ccc.bsi.foreverfashion.controller.apirest;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import br.edu.iff.ccc.bsi.foreverfashion.dto.CategoriaGetDTO;
+import br.edu.iff.ccc.bsi.foreverfashion.dto.CategoriaSetDTO;
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Categoria;
 import br.edu.iff.ccc.bsi.foreverfashion.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,9 +38,10 @@ public class CategoriaApiRestController {
         @ApiResponse(responseCode = "409", description = "Categoria já cadastrada", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping()
-    public ResponseEntity<Categoria> create(@RequestBody Categoria body) {
-        Categoria categoriaCriada = service.create(body);
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaCriada);
+    public ResponseEntity<CategoriaGetDTO> create(@RequestBody CategoriaSetDTO body) {
+        Categoria categoriaCriada = service.create(body.transformarParaObjeto());
+        CategoriaGetDTO categoriaGetDTO = new CategoriaGetDTO();
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaGetDTO.transformaParaCategoriaDTO(categoriaCriada));
     }
 
     @Operation(summary = "Buscar todas as categorias")
@@ -49,10 +50,11 @@ public class CategoriaApiRestController {
         @ApiResponse(responseCode = "404", description = "Categorias não encontradas", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping()
-    public ResponseEntity<List<Categoria>> readAll() {
+    public ResponseEntity<List<CategoriaGetDTO>> readAll() {
         List<Categoria> categorias = service.readAll();
         if(!categorias.isEmpty()){
-            return ResponseEntity.ok(categorias);
+            CategoriaGetDTO categoriaGetDTO = new CategoriaGetDTO();
+            return ResponseEntity.ok(categoriaGetDTO.transformaParaCategoriaDTO(categorias));
         }
         return ResponseEntity.notFound().build();
     }
@@ -63,13 +65,10 @@ public class CategoriaApiRestController {
         @ApiResponse(responseCode = "404", description = "Categoria não encontrada", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Categoria> readById(@PathVariable Long id) {
-        Optional<Categoria> categoria = service.readById(id);
-        if(categoria.isPresent()){
-            return ResponseEntity.ok(categoria.get());
-        }else{
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<CategoriaGetDTO> readById(@PathVariable Long id) {
+        Categoria categoria = service.readById(id);
+        CategoriaGetDTO categoriaGetDTO = new CategoriaGetDTO();
+        return ResponseEntity.ok(categoriaGetDTO.transformaParaCategoriaDTO(categoria));
     }
 
     @Operation(summary = "Atualizar uma categoria")
@@ -78,9 +77,10 @@ public class CategoriaApiRestController {
         @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> update(@PathVariable Long id, @RequestBody Categoria body) {
-        Categoria categoriaAtualizada = service.update(id, body);
-        return ResponseEntity.ok(categoriaAtualizada);
+    public ResponseEntity<CategoriaGetDTO> update(@PathVariable Long id, @RequestBody CategoriaSetDTO body) {
+        Categoria categoriaAtualizada = service.update(id, body.transformarParaObjeto());
+        CategoriaGetDTO categoriaGetDTO = new CategoriaGetDTO();
+        return ResponseEntity.ok(categoriaGetDTO.transformaParaCategoriaDTO(categoriaAtualizada));
     }
 
     @Operation(summary = "Deletar uma categoria")
@@ -89,11 +89,8 @@ public class CategoriaApiRestController {
         @ApiResponse(responseCode = "404", description = "Categoria não encontrada", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        boolean categoriaDeletada = service.delete(id);
-        if(!categoriaDeletada){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(categoriaDeletada);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

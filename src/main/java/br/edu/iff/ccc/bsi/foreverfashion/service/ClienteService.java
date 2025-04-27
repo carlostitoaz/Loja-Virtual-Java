@@ -1,11 +1,12 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Cliente;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.IdNaoEncontrado;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.JaCadastrado;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.*;
 import jakarta.transaction.Transactional;
 
@@ -20,7 +21,7 @@ public class ClienteService {
     @Transactional
     public Cliente create(Cliente cliente) {
         if (clienteRepository.existsByCpf(cliente.getCpf())) {
-            throw new RuntimeException("Cliente já cadastrado com CPF fornecido.");
+            throw new JaCadastrado("Cliente já cadastrado com CPF fornecido.");
         }
         return clienteRepository.save(cliente);
     }
@@ -32,25 +33,21 @@ public class ClienteService {
     @Transactional
     public Cliente update(Long id, Cliente cliente) {
         if(!clienteRepository.existsById(id)) {
-            throw new RuntimeException("Cliente não encontrado");
+            throw new IdNaoEncontrado("Cliente não encontrado com ID: "+id);
         }
         cliente.setId_cliente(id);
         return clienteRepository.save(cliente);
     }
 
     @Transactional
-    public boolean delete(Long id){
-        if(clienteRepository.existsById(id)){
-            clienteRepository.deleteById(id);
-            return true;
+    public void delete(Long id){
+        if(!clienteRepository.existsById(id)){
+            throw new IdNaoEncontrado("Cliente não encontrado com ID: "+id);
         }
-        return false;
+        clienteRepository.deleteById(id);
     }
 
-    public Optional<Cliente> readById(Long id){
-        if(!clienteRepository.existsById(id)){
-            throw new RuntimeException("Cliente não encontrado");
-        }
-        return clienteRepository.findById(id);
+    public Cliente readById(Long id){
+        return clienteRepository.findById(id).orElseThrow(() -> new IdNaoEncontrado("Cliente não encontrado com ID: "+id));
     }   
 }

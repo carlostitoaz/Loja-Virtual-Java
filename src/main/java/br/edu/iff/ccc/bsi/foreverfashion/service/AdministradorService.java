@@ -1,11 +1,12 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Administrador;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.IdNaoEncontrado;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.JaCadastrado;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.AdministradorRepository;
 import jakarta.transaction.Transactional;
 
@@ -20,8 +21,8 @@ public class AdministradorService {
     @Transactional
     public Administrador create(Administrador administrador) {
         if (administradorRepository.existsByDescricao(administrador.getDescricao())) {
-            throw new RuntimeException("Administrador já cadastrado com descrição fornecida.");
-        }   
+            throw new JaCadastrado("Administrador já cadastrado com descrição fornecida.");
+        }
         return administradorRepository.save(administrador);
     }
 
@@ -32,25 +33,22 @@ public class AdministradorService {
     @Transactional
     public Administrador update(Long id, Administrador administrador) {
         if (!administradorRepository.existsById(id)) {
-            throw new RuntimeException("Administrador não encontrado");
+            throw new IdNaoEncontrado("Administrador não encontrado com ID "+id);
         }
         administrador.setId_pessoa(id); 
         return administradorRepository.save(administrador);
     }
 
     @Transactional
-    public boolean delete(Long id) {
-        if (administradorRepository.existsById(id)) {
-            administradorRepository.deleteById(id);
-            return true;
+    public void delete(Long id) {
+        if (!administradorRepository.existsById(id)) {
+            throw new IdNaoEncontrado("Administrador não encontrado com ID "+id);
         }
-        return false;
+        administradorRepository.deleteById(id); 
     }
 
-    public Optional<Administrador> readById(Long id) {
-        if (!administradorRepository.existsById(id)) {
-            throw new RuntimeException("Administrador não encontrado");
-        }
-        return administradorRepository.findById(id);
+    public Administrador readById(Long id) {
+        return administradorRepository.findById(id).orElseThrow(() -> new IdNaoEncontrado("Administrador não encontrado com ID "+id));
     }
+    
 }

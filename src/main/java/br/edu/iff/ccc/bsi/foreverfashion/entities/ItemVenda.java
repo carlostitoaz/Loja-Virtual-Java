@@ -2,6 +2,8 @@ package br.edu.iff.ccc.bsi.foreverfashion.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +31,7 @@ public class ItemVenda implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "id_venda", nullable = false)
+    @JsonBackReference
     private Venda venda;
 
     @ManyToOne

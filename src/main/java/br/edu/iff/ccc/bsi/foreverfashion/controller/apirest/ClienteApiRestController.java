@@ -10,8 +10,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import br.edu.iff.ccc.bsi.foreverfashion.dto.ClienteGetDTO;
+import br.edu.iff.ccc.bsi.foreverfashion.dto.ClienteSetDTO;
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Cliente;
 import br.edu.iff.ccc.bsi.foreverfashion.service.*;
 
@@ -32,9 +33,10 @@ public class ClienteApiRestController {
         @ApiResponse(responseCode = "409", description = "Cliente já cadastrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PostMapping()
-    public ResponseEntity<Cliente> create(@RequestBody Cliente body) {
-        Cliente clienteCriado = service.create(body);
-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteCriado);
+    public ResponseEntity<ClienteGetDTO> create(@RequestBody ClienteSetDTO body) {
+        Cliente clienteCriado = service.create(body.transformaParaObjeto());
+        ClienteGetDTO clienteGetDTO = new ClienteGetDTO();
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteGetDTO.transformarParaClienteGetDTO(clienteCriado));
     }
 
     @Operation(summary = "Buscar todos os clientes")
@@ -43,10 +45,11 @@ public class ClienteApiRestController {
         @ApiResponse(responseCode = "404", description = "Clientes não encontrados", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping()
-    public ResponseEntity<List<Cliente>> readAll() {
+    public ResponseEntity<List<ClienteGetDTO>> readAll() {
         List<Cliente> clientes = service.readAll();
         if(!clientes.isEmpty()){
-            return ResponseEntity.ok(clientes);
+            ClienteGetDTO clienteGetDTO = new ClienteGetDTO();
+            return ResponseEntity.ok(clienteGetDTO.transformarParaClienteGetDTO(clientes));
         }
         return ResponseEntity.notFound().build();
     }
@@ -57,12 +60,10 @@ public class ClienteApiRestController {
         @ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> readOne(@PathVariable Long id) {
-        Optional<Cliente> cliente = service.readById(id);
-        if(cliente.isPresent()){
-            return ResponseEntity.ok(cliente.get());
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<ClienteGetDTO> readOne(@PathVariable Long id) {
+        Cliente cliente = service.readById(id);
+        ClienteGetDTO clienteGetDTO = new ClienteGetDTO();
+        return ResponseEntity.ok(clienteGetDTO.transformarParaClienteGetDTO(cliente));
     }
 
     @Operation(summary = "Atualizar um cliente")
@@ -71,10 +72,10 @@ public class ClienteApiRestController {
         @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Cliente> update(@PathVariable Long id, @RequestBody Cliente body) {
-        Cliente clienteAtualizado = service.update(id, body);
-        return ResponseEntity.ok(clienteAtualizado);
+    public ResponseEntity<ClienteGetDTO> update(@PathVariable Long id, @RequestBody ClienteSetDTO body) {
+        Cliente clienteAtualizado = service.update(id, body.transformaParaObjeto());
+        ClienteGetDTO clienteGetDTO = new ClienteGetDTO();
+        return ResponseEntity.ok(clienteGetDTO.transformarParaClienteGetDTO(clienteAtualizado));
     }
 
     @Operation(summary = "Deletar um cliente")
@@ -83,11 +84,8 @@ public class ClienteApiRestController {
         @ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        boolean clienteDeletado = service.delete(id);
-        if(!clienteDeletado){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(clienteDeletado);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
