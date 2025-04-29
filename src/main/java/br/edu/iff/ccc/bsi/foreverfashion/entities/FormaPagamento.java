@@ -10,14 +10,13 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class FormaPagamento implements Serializable{
+public class FormaPagamento implements Serializable {
     public static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_forma_pagamento;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String descricao;
 }

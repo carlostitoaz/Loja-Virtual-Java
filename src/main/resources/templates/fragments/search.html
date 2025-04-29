@@ -1,0 +1,12 @@
+<div th:fragment="search(caminhoBusca, placeholder, caminhoCriar)">
+    <div class="d-flex justify-content-between mb-4">
+        <form th:action="@{${caminhoBusca}}" method="get" class="d-flex col-10">
+            <input class="form-control me-2" type="search" name="q" th:placeholder="${placeholder}" aria-label="Buscar">
+            <button class="btn btn-outline-primary me-2" type="submit">Buscar</button>
+        </form>
+
+        <a th:href="@{${caminhoCriar}}" class="btn btn-primary col-2">
+            <i class="bi bi-plus-lg"></i> <span>Novo</span>
+        </a>
+    </div>
+</div>
