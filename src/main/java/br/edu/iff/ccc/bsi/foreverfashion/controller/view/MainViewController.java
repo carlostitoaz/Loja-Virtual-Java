@@ -3,22 +3,34 @@ package br.edu.iff.ccc.bsi.foreverfashion.controller.view;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import br.edu.iff.ccc.bsi.foreverfashion.entities.Usuario;
+import br.edu.iff.ccc.bsi.foreverfashion.service.UsuarioService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 
 @Controller
 @RequestMapping()
 public class MainViewController {
+    @Autowired
+    private UsuarioService usuarioService;
     @GetMapping("/home")
-    public String getHome() {
+    public String getHome(Model model, HttpServletRequest request) {
+        model.addAttribute("requestURI", request.getRequestURI());
         return "home";
     }
 
     @GetMapping("/vendas")
-    public String getVenda(Model model) {
+    public String getVenda(Model model, HttpServletRequest request) {
         
         List<String> colunas = Arrays.asList("ID venda", "Valor", "Cliente", "Vendedor", "Data");
     
@@ -32,11 +44,14 @@ public class MainViewController {
         model.addAttribute("colunas", colunas);
         model.addAttribute("dados", dados);
 
+
+        model.addAttribute("requestURI", request.getRequestURI());
+
         return "venda";
     }
     
     @GetMapping("/produtos")
-    public String getProduto(Model model) {
+    public String getProduto(Model model, HttpServletRequest request) {
 
         List<String> colunas = Arrays.asList("ID", "Descrição", "Valor");
     
@@ -50,11 +65,13 @@ public class MainViewController {
         model.addAttribute("colunas", colunas);
         model.addAttribute("dados", dados);
 
+        model.addAttribute("requestURI", request.getRequestURI());
+
         return "produto";
     }
 
     @GetMapping("/funcionarios")
-    public String getFuncionario(Model model) {
+    public String getFuncionario(Model model, HttpServletRequest request) {
         List<String> colunas = Arrays.asList("ID", "Nome", "Cargo");
     
         List<List<String>> dados = Arrays.asList(
@@ -69,11 +86,13 @@ public class MainViewController {
         model.addAttribute("colunas", colunas);
         model.addAttribute("dados", dados);
 
+        model.addAttribute("requestURI", request.getRequestURI());
+
         return "funcionario";
     }
 
     @GetMapping("/clientes")
-    public String getCliente(Model model) {
+    public String getCliente(Model model, HttpServletRequest request) {
         List<String> colunas = Arrays.asList("ID", "Nome", "CPF");
     
         List<List<String>> dados = Arrays.asList(
@@ -85,6 +104,34 @@ public class MainViewController {
         model.addAttribute("titulo", "Lista de Clientes");
         model.addAttribute("colunas", colunas);
         model.addAttribute("dados", dados);
+
+        model.addAttribute("requestURI", request.getRequestURI());
+
         return "cliente";
     }   
+
+    @GetMapping("/login")
+    public String mostrarFormularioLogin() {
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(
+            @RequestParam String username,
+            @RequestParam String password,
+            Model model,
+            HttpSession session) {
+
+        List<Usuario> usuarios = usuarioService.readAll();
+
+        for (Usuario u : usuarios) {
+            if (u.getUsuario().equals(username) && u.getSenha().equals(password)) {
+                //session.setAttribute("usuarioLogado", u);
+                return "redirect:/home";
+            }
+        }
+
+        model.addAttribute("erro", "Usuário ou senha inválidos.");
+        return "login";
+    }
 }

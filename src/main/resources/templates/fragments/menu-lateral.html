@@ -1,34 +1,40 @@
 <div th:fragment="menu-lateral">
-    <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="min-width: 200px; background-color: #0A0A7E; min-height: 100vh;">
+    <div class="d-flex flex-column flex-shrink-0 p-3 text-white" style="background-color: #0A0A7E; min-height: 100vh;">
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item mb-2">
-                <a href="/home" class="nav-link active" style="background-color: #77E9FB; color: black;">
-                    <i class="bi bi-house-door"></i> Início
+                <a href="/home" class="nav-link text-white" th:classappend="${requestURI == '/home'} ? 'active'">
+                    <i class="bi bi-house-door"></i>
+                    <span th:text="#{menu.home}"></span>
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="/vendas" class="nav-link text-white">
-                    <i class="bi bi-cash"></i> Vendas
+                <a href="/vendas" class="nav-link text-white" th:classappend="${requestURI == '/vendas'} ? ' active' : ''">
+                    <i class="bi bi-cash"></i>
+                    <span th:text="#{menu.vendas}"></span>
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="produtos" class="nav-link text-white">
-                    <i class="bi bi-box"></i> Produtos
+                <a href="/produtos" class="nav-link text-white" th:classappend="${requestURI == '/produtos'} ? ' active' : ''">
+                    <i class="bi bi-box"></i>
+                    <span th:text="#{menu.produtos}"></span>
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="funcionarios" class="nav-link text-white">
-                    <i class="bi bi-people"></i> Funcionários
+                <a href="/funcionarios" class="nav-link text-white" th:classappend="${requestURI == '/funcionarios'} ? ' active' : ''">
+                    <i class="bi bi-people"></i>
+                    <span th:text="#{menu.funcionarios}"></span>
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="clientes" class="nav-link text-white">
-                    <i class="bi bi-person-lines-fill"></i> Clientes
+                <a href="/clientes" class="nav-link text-white" th:classappend="${requestURI == '/clientes'} ? ' active' : ''">
+                    <i class="bi bi-person-lines-fill"></i>
+                    <span th:text="#{menu.clientes}"></span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link text-white">
-                    <i class="bi bi-box-arrow-right"></i> Sair
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span th:text="#{menu.sair}"></span>
                 </a>
             </li>
         </ul>
