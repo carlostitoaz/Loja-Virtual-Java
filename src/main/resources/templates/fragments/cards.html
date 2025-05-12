@@ -1,0 +1,71 @@
+<div th:fragment="cardFaturamento(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #4141ec;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="'R$ ' + ${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA')}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="cardReceitaLiquida(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #35d758;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="'R$ ' + ${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA')}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="cardTotalVendas(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #bfd735;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="${valor}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="cardTicketMedio(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #1c16c9;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="'R$ ' + ${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA')}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+  
+<div th:fragment="cardCmv(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #a3a3a6;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA') + ' %'}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="cardOrcamento(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #b70e95;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="'R$ ' + ${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA')}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="cardPercentualOrcamento(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #b70e95;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA') + ' %'}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="cardNivelEstoque(texto, valor)">
+    <div class="card shadow-sm text-white" style="background-color: #126c1d;">
+        <div class="card-body text-center">
+            <h6 th:text="${texto}">Texto</h6>
+            <h5 class="card-valor" th:text="${#numbers.formatDecimal(valor, 2, 'POINT', 2, 'COMMA') + ' %'}">R$ 0,00</h5>
+        </div>
+    </div>
+</div>

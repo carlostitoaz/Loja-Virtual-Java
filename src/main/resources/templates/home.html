@@ -9,7 +9,7 @@
         <div th:replace="fragments/header :: header"></div>
 
         <div class="container-fluid">
-            <div class="row">
+            <div class="row h-100">
                 <!-- Menu Lateral -->
                 <div class="col-2 p-0">
                     <div th:replace="fragments/menu-lateral :: menu-lateral"></div>
@@ -19,12 +19,56 @@
                 <div class="col-10 p-4">
                     <h4>Bem-vindo, Carlos!</h4>
                     <hr>
-                    <!-- Aqui você coloca o restante da página -->
+
+                    <div class="container mt-4"> 
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-1">
+                                <button class="btn btn-outline-secondary" onclick="visibilidadeValor()">
+                                    <i class="bi bi-eye" id="icone-visibilidade"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                          <div class="col-md-3">
+                            <div th:replace="fragments/cards :: cardFaturamento('Faturamento', 5000)"></div>
+                          </div>
+                          <div class="col-md-3">
+                            <div th:replace="fragments/cards :: cardReceitaLiquida('Receita Líquida', 2500)"></div>
+                          </div>
+                          <div class="col-md-3">
+                            <div th:replace="fragments/cards :: cardTotalVendas('Total de Vendas', 150)"></div>
+                          </div>
+                          <div class="col-md-3">
+                            <div th:replace="fragments/cards :: cardTicketMedio('Ticket Médio', 135)"></div>
+                          </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-3">
+                                <div th:replace="fragments/cards :: cardCmv('CMV', 75)"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div th:replace="fragments/cards :: cardOrcamento('Orçamento', 50000)"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div th:replace="fragments/cards :: cardPercentualOrcamento('% Orçamento', 10)"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <div th:replace="fragments/cards :: cardNivelEstoque('Nível de estoque', 70)"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                      
                 </div>
             </div>
         </div>
         <div th:replace="fragments/footer :: footer"></div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script th:src="@{/js/visibilidadeValor.js}"></script>
+
     </body>
 </html>
