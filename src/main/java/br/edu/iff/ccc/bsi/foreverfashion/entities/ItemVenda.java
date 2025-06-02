@@ -23,8 +23,8 @@ public class ItemVenda implements Serializable {
     @Column(nullable = false)
     private int quantidade;
 
-    @Column(nullable = false)
-    private Double valor_unitario;
+    @Column(nullable = true)
+    private Double desconto;
 
     @Column(nullable = false)
     private Double valor_total;

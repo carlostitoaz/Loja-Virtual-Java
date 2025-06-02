@@ -1,6 +1,7 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,12 @@ public class CargoService {
         if(!cargoRepository.existsById(id)){
             throw new IdNaoEncontrado("Cargo não encontrado com ID "+id);
         }
+
+        Optional<Cargo> cargoBuscado = findByDescricao(cargo.getDescricao());
+        if(cargoBuscado.isPresent() && !cargoBuscado.get().getId_cargo().equals(id)) {
+            throw new JaCadastrado("Cargo já cadastrado com o nome fornecido.");
+        }
+
         cargo.setId_cargo(id);
         return cargoRepository.save(cargo);
     }
@@ -49,5 +56,9 @@ public class CargoService {
 
     public Cargo readById(Long id){
         return cargoRepository.findById(id).orElseThrow(() -> new IdNaoEncontrado("Cargo não encontrado com ID "+id));
+    }
+
+    public Optional<Cargo> findByDescricao(String descricao) {
+        return cargoRepository.findByDescricao(descricao);
     }
 }

@@ -1,7 +1,9 @@
 package br.edu.iff.ccc.bsi.foreverfashion.entities;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +37,12 @@ public class Produto implements Serializable{
     private Double preco_custo;
 
     @Column(nullable = false)
+    private Double preco_venda;
+
+    @Column(nullable = false)
+    private Double max_desconto;
+
+    @Column(nullable = false)
     private int quantidade;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -45,5 +53,6 @@ public class Produto implements Serializable{
     private String material;
 
     @Column(nullable = false)
-    private Date data_entrada;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate data_entrada;
 }

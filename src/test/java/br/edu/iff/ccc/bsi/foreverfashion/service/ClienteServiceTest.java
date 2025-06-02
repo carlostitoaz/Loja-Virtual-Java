@@ -1,6 +1,8 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Cliente;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.IdNaoEncontrado;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.JaCadastrado;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.ClienteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +53,7 @@ class ClienteServiceTest {
     void deveLancarExcecaoQuandoCpfJaExistir() {
         when(clienteRepository.existsByCpf(cliente.getCpf())).thenReturn(true);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+        JaCadastrado ex = assertThrows(JaCadastrado.class, () -> {
             clienteService.create(cliente);
         });
 
@@ -75,6 +77,7 @@ class ClienteServiceTest {
     @DisplayName("Deve atualizar clientes existentes.")
     void deveAtualizarClienteExistente() {
         when(clienteRepository.existsById(1L)).thenReturn(true);
+        when(clienteRepository.findByCpf(cliente.getCpf())).thenReturn(Optional.of(cliente));
         when(clienteRepository.save(cliente)).thenReturn(cliente);
 
         Cliente atualizado = clienteService.update(1L, cliente);
@@ -88,7 +91,7 @@ class ClienteServiceTest {
     void deveLancarExcecaoAoAtualizarClienteInexistente() {
         when(clienteRepository.existsById(1L)).thenReturn(false);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+        IdNaoEncontrado ex = assertThrows(IdNaoEncontrado.class, () -> {
             clienteService.update(1L, cliente);
         });
 
@@ -112,7 +115,7 @@ class ClienteServiceTest {
     void naoDeveDeletarClienteInexistente() {
         when(clienteRepository.existsById(1L)).thenReturn(false);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+        IdNaoEncontrado ex = assertThrows(IdNaoEncontrado.class, () -> {
             clienteService.delete(1L);
         });
 
@@ -123,7 +126,6 @@ class ClienteServiceTest {
     @Test
     @DisplayName("Deve buscar cliente por ID com sucesso.")
     void deveBuscarClientePorIdComSucesso() {
-        //when(clienteRepository.existsById(1L)).thenReturn(true);
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
 
         Cliente resultado = clienteService.readById(1L);
@@ -134,13 +136,12 @@ class ClienteServiceTest {
     @Test
     @DisplayName("Deve lançar exceção ao buscar cliente inexistente por ID.")
     void deveLancarExcecaoAoBuscarClienteInexistentePorId() {
-        when(clienteRepository.existsById(1L)).thenReturn(false);
+        when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+        IdNaoEncontrado ex = assertThrows(IdNaoEncontrado.class, () -> {
             clienteService.readById(1L);
         });
 
-        assertEquals("Cliente não encontrado", ex.getMessage());
-        verify(clienteRepository, never()).findById(any());
+        assertEquals("Cliente não encontrado com ID: "+1L, ex.getMessage());
     }
 }

@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.FormaPagamento;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.IdNaoEncontrado;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.JaCadastrado;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.FormaPagamentoRepository;
 import jakarta.transaction.Transactional;
 
@@ -20,7 +22,7 @@ public class FormaPagamentoService {
     @Transactional
     public FormaPagamento create(FormaPagamento formaPagamento) {
         if (formaPagamentoRepository.existsByDescricao(formaPagamento.getDescricao())) {
-            throw new RuntimeException("Forma de pagamento já cadastrada com nome fornecido.");
+            throw new JaCadastrado("Forma de pagamento já cadastrada com nome fornecido.");
         }   
         return formaPagamentoRepository.save(formaPagamento);
     }
@@ -32,30 +34,33 @@ public class FormaPagamentoService {
     @Transactional
     public FormaPagamento update(Long id, FormaPagamento formaPagamento){
         if(!formaPagamentoRepository.existsById(id)){
-            throw new RuntimeException("Forma de pagamento não encontrada");
+            throw new IdNaoEncontrado("Forma de pagamento não encontrada");
+        }
+
+        Optional<FormaPagamento> formaPagamentoBuscada = formaPagamentoRepository.findByDescricao(formaPagamento.getDescricao());
+        if(formaPagamentoBuscada.isPresent() && !formaPagamentoBuscada.get().getId_forma_pagamento().equals(id)) {
+            throw new JaCadastrado("Forma de pagamento já cadastrada com nome fornecido.");
         }
         formaPagamento.setId_forma_pagamento(id);
         return formaPagamentoRepository.save(formaPagamento);
     }
 
     @Transactional
-    public boolean delete(Long id){
+    public void delete(Long id){
         if(formaPagamentoRepository.existsById(id)){
-            formaPagamentoRepository.deleteById(id);
-            return true;
+            throw new IdNaoEncontrado("Forma de pagamento não encontrada.");
         }
-        return false;
+        formaPagamentoRepository.deleteById(id);
     }
 
     public Optional<FormaPagamento> readById(Long id){
         if(!formaPagamentoRepository.existsById(id)){
-           throw new RuntimeException("Forma de pagamento não encontrada");
+           throw new IdNaoEncontrado("Forma de pagamento não encontrada");
         }
         return formaPagamentoRepository.findById(id);      
     }
 
-
-
-
-
+    public Optional<FormaPagamento> findByDescricao(String descricao) {
+        return formaPagamentoRepository.findByDescricao(descricao);
+    }
 }

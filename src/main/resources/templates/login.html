@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/head :: head"></div>
+    <title>Login - Forever Fashion</title>
+    <link rel="stylesheet" href="/css/login.css" th:href="@{/css/login.css}">
+</head>
+<body>
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <div class="col-md-6 d-none d-md-flex left-panel">
+            <div class="text-center">
+
+                <h3 th:text="#{login.titulo.saudacao}"></h3>
+
+                <img src="/images/logo.png" alt="Forever Fashion Logo" class="mt-4" />
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="form-container w-75">
+
+                <h3 class="text-center mb-4" th:text="#{login.titulo.entrar}"></h3>
+
+                <div th:if="${erro}" class="alert alert-danger text-center" role="alert">
+                    <p th:text="${erro}"></p>
+                </div>
+                <form th:action="@{/login}" method="post">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="username" placeholder="Usuário" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" name="password" placeholder="Senha" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-login">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

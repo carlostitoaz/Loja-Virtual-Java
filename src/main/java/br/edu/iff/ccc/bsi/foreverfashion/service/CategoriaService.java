@@ -1,6 +1,7 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,12 @@ public class CategoriaService {
         if(!categoriaRepository.existsById(id)){
             throw new IdNaoEncontrado("Categoria não encontrada com ID "+id);
         }
+
+        Optional<Categoria> categoriaBuscada = findByDescricao(categoria.getDescricao());
+        if(categoriaBuscada.isPresent() && !categoriaBuscada.get().getId_categoria().equals(id)){
+            throw new JaCadastrado("Categoria já cadastrada com nome fornecido.");
+        }
+
         categoria.setId_categoria(id);
         return categoriaRepository.save(categoria);
     }
@@ -49,5 +56,9 @@ public class CategoriaService {
 
     public Categoria readById(Long id){
        return categoriaRepository.findById(id).orElseThrow(()->  new IdNaoEncontrado("Categoria não encontrada com ID "+id));
+    }
+
+    public Optional<Categoria> findByDescricao(String descricao) {
+        return categoriaRepository.findByDescricao(descricao);
     }
 }

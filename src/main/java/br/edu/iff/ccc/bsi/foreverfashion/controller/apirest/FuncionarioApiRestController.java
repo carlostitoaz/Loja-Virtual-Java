@@ -1,7 +1,6 @@
 package br.edu.iff.ccc.bsi.foreverfashion.controller.apirest;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,11 +64,8 @@ public class FuncionarioApiRestController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<Funcionario> readById(@PathVariable Long id) {
-        Optional<Funcionario> funcionario = service.readById(id);
-        if(funcionario.isPresent()){
-            return ResponseEntity.ok(funcionario.get());
-        }
-        return ResponseEntity.notFound().build();
+        Funcionario funcionario = service.readById(id);
+        return ResponseEntity.ok(funcionario);
     }
 
     @Operation(summary = "Atualizar um funcionário")
@@ -90,11 +86,8 @@ public class FuncionarioApiRestController {
         @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        boolean funcionarioDeletado = service.delete(id);
-        if(!funcionarioDeletado){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(funcionarioDeletado);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

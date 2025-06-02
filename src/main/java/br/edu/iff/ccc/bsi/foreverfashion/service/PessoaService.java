@@ -53,4 +53,12 @@ public class PessoaService {
         }
         return pessoaRepository.findById(id);
     }
+
+    public Optional<Pessoa> findByEmail(String email){
+        return pessoaRepository.findByEmail(email);
+    }
+
+    public Optional<Pessoa> findByTelefone(String telefone) {
+        return pessoaRepository.findByTelefone(telefone);
+    }
 }

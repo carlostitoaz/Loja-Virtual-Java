@@ -89,11 +89,8 @@ public class FormaPagamentoApiRestController {
         @ApiResponse(responseCode = "404", description = "Forma de pagamento não encontrada", content = @Content(schema = @Schema(implementation = Error.class)))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
-        boolean formaPagamentoDeletada = service.delete(id);
-        if (!formaPagamentoDeletada) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(formaPagamentoDeletada);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

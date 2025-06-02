@@ -29,9 +29,15 @@ public class Venda implements Serializable{
         this.data = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<ItemVenda> itens;    
+
+    @Column(name = "valor_total", nullable = false)
+    private Double valor_total;
+
+    @Column(name = "desconto", nullable = true)
+    private Double desconto;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
