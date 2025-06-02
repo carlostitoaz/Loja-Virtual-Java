@@ -55,5 +55,4 @@ public class AdministradorSetDTO {
 
         return administrador;
     }
-
 }

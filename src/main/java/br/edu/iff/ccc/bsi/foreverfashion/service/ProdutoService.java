@@ -5,15 +5,19 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Produto;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.IdNaoEncontrado;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.JaCadastrado;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.ProdutoRepository;
 import jakarta.transaction.Transactional;
 
 @Service
 public class ProdutoService {
     private final ProdutoRepository produtoRepository;
+    private final CategoriaService categoriaService;
 
-    public ProdutoService(ProdutoRepository produtoRepository) {
+    public ProdutoService(ProdutoRepository produtoRepository, CategoriaService categoriaService) {
         this.produtoRepository = produtoRepository;
+        this.categoriaService = categoriaService;
     }
 
     @Transactional
@@ -22,6 +26,9 @@ public class ProdutoService {
         if(produtoExistente.isPresent()) {
             throw new RuntimeException("Produto já cadastrado com nome fornecido.");
         }
+
+        produto.setCategoria(categoriaService.readById(produto.getCategoria().getId_categoria()));
+
         return produtoRepository.save(produto);
     }
 
@@ -31,9 +38,25 @@ public class ProdutoService {
 
     @Transactional
     public Produto update(Long id, Produto produto) {
-        if (!produtoRepository.existsById(id)) {
-            throw new RuntimeException("Produto não encontrado");
+        Produto produtoExistente = produtoRepository.findById(produto.getId_produto()).orElseThrow(() -> new IdNaoEncontrado("Produto não encontrado com ID: "+id));
+
+        Optional<Produto> produtoDescricaoBuscada = produtoRepository.findByDescricao(produto.getDescricao());
+        if(produtoDescricaoBuscada.isPresent() && !produtoDescricaoBuscada.get().getId_produto().equals(id) ) {
+            throw new JaCadastrado("Produto já cadastrado com nome fornecido.");
         }
+
+        produtoExistente.setCategoria(categoriaService.readById(produto.getCategoria().getId_categoria()));
+
+        produtoExistente.setMarca(produto.getMarca());
+        produtoExistente.setTamanho(produto.getTamanho());
+        produtoExistente.setCor(produto.getCor());
+        produtoExistente.setPreco_custo(produto.getPreco_custo());
+        produtoExistente.setPreco_venda(produto.getPreco_venda());
+        produtoExistente.setMax_desconto(produto.getMax_desconto());
+        produtoExistente.setQuantidade(produto.getQuantidade());
+        produtoExistente.setMaterial(produto.getMaterial());
+        produtoExistente.setData_entrada(produto.getData_entrada());
+
         produto.setId_produto(id);
         return produtoRepository.save(produto);
     }
@@ -47,10 +70,7 @@ public class ProdutoService {
         return false;
     }
 
-    public Optional<Produto> readById(Long id) {
-        if (!produtoRepository.existsById(id)) {
-            throw new RuntimeException("Produto não encontrado");
-        }
-        return produtoRepository.findById(id);
+    public Produto readById(Long id) {
+        return produtoRepository.findById(id).orElseThrow(() -> new IdNaoEncontrado("Produto não encontrado com ID "+id));
     }
 }

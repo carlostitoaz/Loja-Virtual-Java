@@ -1,6 +1,7 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,12 @@ public class ClienteService {
         if(!clienteRepository.existsById(id)) {
             throw new IdNaoEncontrado("Cliente não encontrado com ID: "+id);
         }
+
+        Optional<Cliente> clienteBuscado = findByCliente(cliente.getCpf());
+        if(clienteBuscado.isPresent() && !clienteBuscado.get().getId_cliente().equals(id)) {
+            throw new JaCadastrado("Cliente já cadastrado com CPF fornecido.");
+        }
+
         cliente.setId_cliente(id);
         return clienteRepository.save(cliente);
     }
@@ -50,4 +57,8 @@ public class ClienteService {
     public Cliente readById(Long id){
         return clienteRepository.findById(id).orElseThrow(() -> new IdNaoEncontrado("Cliente não encontrado com ID: "+id));
     }   
+
+    public Optional<Cliente> findByCliente(String cpf) {
+        return clienteRepository.findByCpf(cpf);
+    }
 }

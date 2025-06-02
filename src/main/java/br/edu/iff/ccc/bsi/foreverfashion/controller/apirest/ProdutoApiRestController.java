@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/produtos")
@@ -57,11 +56,8 @@ public class ProdutoApiRestController {
     })  
     @GetMapping("/{id}")
     public ResponseEntity<Produto> readById(@PathVariable Long id) {
-        Optional<Produto> produto = service.readById(id);
-        if(produto.isPresent()){
-            return ResponseEntity.ok(produto.get());
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Produto produto = service.readById(id);
+        return ResponseEntity.ok(produto);
     }
 
     @Operation(summary = "Atualizar um produto")

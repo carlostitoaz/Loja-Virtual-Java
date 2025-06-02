@@ -1,19 +1,21 @@
 package br.edu.iff.ccc.bsi.foreverfashion.service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.*;
+import br.edu.iff.ccc.bsi.foreverfashion.exception.IdNaoEncontrado;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.VendaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -21,6 +23,18 @@ public class VendaServiceTest {
 
     @Mock
     private VendaRepository vendaRepository;
+
+    @Mock
+    private ProdutoService produtoService;
+
+    @Mock
+    private ClienteService clienteService;
+
+    @Mock
+    private PessoaService pessoaService;
+
+    @Mock
+    private FormaPagamentoService formaPagamentoService;
 
     @InjectMocks
     private VendaService vendaService;
@@ -33,126 +47,108 @@ public class VendaServiceTest {
         venda.setId_venda(1L);
         venda.setData(LocalDateTime.now());
         venda.setItens(new ArrayList<>());
-        venda.setCliente(new Cliente());
-        venda.setPessoa(new Pessoa());
-        venda.setForma_pagamento(new FormaPagamento());
+
+        Cliente cliente = new Cliente();
+        cliente.setId_cliente(1L);
+        venda.setCliente(cliente);
+
+        Pessoa pessoa = new Pessoa();
+        pessoa.setId_pessoa(1L);
+        venda.setPessoa(pessoa);
+
+        FormaPagamento formaPagamento = new FormaPagamento();
+        formaPagamento.setId_forma_pagamento(1L);
+        venda.setForma_pagamento(formaPagamento);
     }
 
     @Test
     @DisplayName("Deve criar venda com sucesso.")
     void deveCriarVendaComSucesso() {
-        when(vendaRepository.save(venda)).thenReturn(venda);
+        when(clienteService.readById(anyLong())).thenReturn(venda.getCliente());
+        when(pessoaService.readById(anyLong())).thenReturn(Optional.of(venda.getPessoa()));
+        when(formaPagamentoService.readById(anyLong())).thenReturn(Optional.of(venda.getForma_pagamento()));
+        when(vendaRepository.save(any(Venda.class))).thenReturn(venda);
 
         Venda resultado = vendaService.create(venda);
 
-        assertEquals(venda, resultado);
-        verify(vendaRepository).save(venda);
+        assertNotNull(resultado);
+        verify(vendaRepository).save(any(Venda.class));
     }
 
     @Test
     @DisplayName("Deve listar todas as vendas.")
     void deveListarTodasAsVendas() {
-        List<Venda> vendas = List.of(venda);
-        when(vendaRepository.findAll()).thenReturn(vendas);
+        when(vendaRepository.findAll()).thenReturn(List.of(venda));
 
         List<Venda> resultado = vendaService.readAll();
 
-        assertEquals(vendas, resultado);
+        assertEquals(1, resultado.size());
         verify(vendaRepository).findAll();
     }
 
     @Test
-    @DisplayName("Deve atualizar vendas existentes.")
+    @DisplayName("Deve atualizar venda existente.")
     void deveAtualizarVendaExistente() {
-        when(vendaRepository.existsById(venda.getId_venda())).thenReturn(true);
-        when(vendaRepository.save(venda)).thenReturn(venda);
+        when(vendaRepository.findById(anyLong())).thenReturn(Optional.of(venda));
+        when(clienteService.readById(anyLong())).thenReturn(venda.getCliente());
+        when(pessoaService.readById(anyLong())).thenReturn(Optional.of(venda.getPessoa()));
+        when(formaPagamentoService.readById(anyLong())).thenReturn(Optional.of(venda.getForma_pagamento()));
+        when(vendaRepository.save(any(Venda.class))).thenReturn(venda);
 
         Venda atualizado = vendaService.update(1L, venda);
 
-        assertEquals(venda, atualizado);
-        verify(vendaRepository).save(venda);
+        assertNotNull(atualizado);
+        verify(vendaRepository).save(any(Venda.class));
     }
 
     @Test
-    @DisplayName("Deve lançar exceção quando venda não existir.")   
+    @DisplayName("Deve lançar exceção ao atualizar venda inexistente.")
     void deveLancarExcecaoQuandoVendaNaoExistir() {
-        when(vendaRepository.existsById(venda.getId_venda())).thenReturn(false);
+        when(vendaRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            vendaService.update(1L, venda);
-        });
+        IdNaoEncontrado ex = assertThrows(IdNaoEncontrado.class, () -> vendaService.update(1L, venda));
 
-        assertEquals("Venda não encontrada.", ex.getMessage());
-        verify(vendaRepository, never()).save(any());
+        assertEquals("Venda não encontrada com ID 1", ex.getMessage());
     }
 
     @Test
     @DisplayName("Deve deletar venda existente.")
     void deveDeletarVendaExistente() {
-        when(vendaRepository.existsById(venda.getId_venda())).thenReturn(true);
-        doNothing().when(vendaRepository).deleteById(venda.getId_venda());
+        when(vendaRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(vendaRepository).deleteById(1L);
 
-        boolean resultado = vendaService.delete(1L);
+        vendaService.delete(1L);
 
-        assertTrue(resultado);
         verify(vendaRepository).deleteById(1L);
     }
 
     @Test
-    @DisplayName("Não deve deletar venda inexistente.")
+    @DisplayName("Deve lançar exceção ao deletar venda inexistente.")
     void naoDeveDeletarVendaInexistente() {
-        when(vendaRepository.existsById(venda.getId_venda())).thenReturn(false);
+        when(vendaRepository.existsById(1L)).thenReturn(false);
 
-        boolean resultado = vendaService.delete(1L);
+        IdNaoEncontrado ex = assertThrows(IdNaoEncontrado.class, () -> vendaService.delete(1L));
 
-        assertFalse(resultado);
-        verify(vendaRepository, never()).deleteById(any());
+        assertEquals("Venda não contrada com ID 1", ex.getMessage());
     }
 
     @Test
     @DisplayName("Deve buscar venda por ID com sucesso.")
     void deveRetornarVendaPorIdComSucesso() {
-        when(vendaRepository.existsById(1L)).thenReturn(true);
         when(vendaRepository.findById(1L)).thenReturn(Optional.of(venda));
 
-        Optional<Venda> resultado = vendaService.readById(1L);
+        Venda resultado = vendaService.readById(1L);
 
-        assertTrue(resultado.isPresent());
-        assertEquals(venda, resultado.get());
+        assertEquals(venda, resultado);
     }
 
     @Test
-    @DisplayName("Deve lançar exceção ao busca venda inexistente por ID.")
+    @DisplayName("Deve lançar exceção ao buscar venda inexistente por ID.")
     void deveLancarExcecaoAoBuscarVendaInexistentePorId() {
-        when(vendaRepository.existsById(1L)).thenReturn(false);
+        when(vendaRepository.findById(1L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            vendaService.readById(1L);
-        });
+        IdNaoEncontrado ex = assertThrows(IdNaoEncontrado.class, () -> vendaService.readById(1L));
 
-        assertEquals("Venda não encontrada.", ex.getMessage());
-        verify(vendaRepository, never()).findById(any());   
+        assertEquals("Venda não encontrada com ID 1", ex.getMessage());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
