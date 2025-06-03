@@ -3,6 +3,7 @@ package br.edu.iff.ccc.bsi.foreverfashion.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Usuario;
@@ -14,9 +15,11 @@ import jakarta.transaction.Transactional;
 @Service
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder codificador;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder codificador) {
         this.usuarioRepository = usuarioRepository;
+        this.codificador = codificador;
     }
 
     @Transactional
@@ -28,6 +31,9 @@ public class UsuarioService {
         if(usuario.getUsuario() == null || usuario.getSenha() == null) {
             throw new RuntimeException("Usuário ou senha não podem ser em branco.");
         }
+
+        String senhaCodificada = codificador.encode(usuario.getSenha());
+        usuario.setSenha(senhaCodificada);
 
         return usuarioRepository.save(usuario);
     } 
@@ -44,6 +50,13 @@ public class UsuarioService {
         if(usuarioBuscado.isPresent() && !usuarioBuscado.get().getId_usuario().equals(id)) {
             throw new JaCadastrado("Usuário já cadastrado com nome fornecido.");
         }
+
+        if(usuario.getUsuario() == null || usuario.getSenha() == null) {
+            throw new RuntimeException("Usuário ou senha não podem ser em branco.");
+        }
+
+        String senhaCodificada = codificador.encode(usuario.getSenha());
+        usuario.setSenha(senhaCodificada);
 
         usuarioExistente.setUsuario(usuario.getUsuario());
         usuarioExistente.setSenha(usuario.getSenha());

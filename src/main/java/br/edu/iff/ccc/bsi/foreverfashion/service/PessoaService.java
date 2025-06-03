@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.bsi.foreverfashion.entities.Pessoa;
+import br.edu.iff.ccc.bsi.foreverfashion.entities.Usuario;
 import br.edu.iff.ccc.bsi.foreverfashion.repository.PessoaRepository;
 import jakarta.transaction.Transactional;
 
@@ -60,5 +61,9 @@ public class PessoaService {
 
     public Optional<Pessoa> findByTelefone(String telefone) {
         return pessoaRepository.findByTelefone(telefone);
+    }
+
+    public Optional<Pessoa> findByUsuario(Usuario usuario) {
+        return pessoaRepository.findByUsuario(usuario);
     }
 }
