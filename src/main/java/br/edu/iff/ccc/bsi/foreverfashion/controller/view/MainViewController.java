@@ -33,6 +33,7 @@ public class MainViewController {
         return "login";
     }
 
+    /* 
     @PostMapping("/login")
     public String login(
             @RequestParam String username,
@@ -50,6 +51,7 @@ public class MainViewController {
         model.addAttribute("erro", "Usuário ou senha inválidos.");
         return "login";
     }
+        */
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {

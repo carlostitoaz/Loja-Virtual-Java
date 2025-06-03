@@ -21,8 +21,8 @@
 
                 <h3 class="text-center mb-4" th:text="#{login.titulo.entrar}"></h3>
 
-                <div th:if="${erro}" class="alert alert-danger text-center" role="alert">
-                    <p th:text="${erro}"></p>
+                <div th:if="${param.error}" class="alert alert-danger text-center" role="alert">
+                    <p>Usuário ou senha inválidos.</p>
                 </div>
                 <form th:action="@{/login}" method="post">
                     <div class="mb-3">
